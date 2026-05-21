@@ -1,11 +1,11 @@
-# 📚 Smart Study Planner
+Smart Study Planner
 
 A clean, modern Flask web application to help students track study tasks,
 manage deadlines, and monitor their progress.
 
 ---
 
-## ✨ Features
+ Features
 
 - **Dashboard** — view all tasks sorted by deadline & priority
 - **Today's Tasks** — highlighted tasks due today
@@ -18,7 +18,7 @@ manage deadlines, and monitor their progress.
 
 ---
 
-## 🗂 Project Structure
+ Project Structure
 
 ```
 smart_study_planner/
@@ -40,46 +40,11 @@ smart_study_planner/
 
 ---
 
-## 🚀 How to Run
 
-### Step 1 — Create a virtual environment (recommended)
-```bash
-python -m venv venv
-```
+ Routes
 
-### Step 2 — Activate the virtual environment
-```bash
-# On Windows:
-venv\Scripts\activate
+| Method | URL                    | Action                  
 
-# On macOS / Linux:
-source venv/bin/activate
-```
-
-### Step 3 — Install dependencies
-```bash
-pip install -r requirements.txt
-```
-
-### Step 4 — Run the app
-```bash
-python app.py
-```
-
-### Step 5 — Open in your browser
-```
-http://127.0.0.1:5000
-```
-
-The SQLite database (`study_planner.db`) is created automatically inside
-the `instance/` folder on first run.
-
----
-
-## 📋 Routes
-
-| Method | URL                    | Action                  |
-|--------|------------------------|-------------------------|
 | GET    | `/`                    | Dashboard               |
 | GET    | `/add`                 | Show add-task form      |
 | POST   | `/add`                 | Save new task           |
@@ -89,7 +54,7 @@ the `instance/` folder on first run.
 
 ---
 
-## 🎨 Tech Stack
+ Tech Stack
 
 - **Backend**: Python 3, Flask, Flask-SQLAlchemy
 - **Database**: SQLite
