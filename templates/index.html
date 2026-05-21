@@ -1,0 +1,219 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — Smart Study Planner{% endblock %}
+
+{% block content %}
+
+<!-- HERO / STATS -->
+<section class="hero">
+  <div class="hero-text">
+    <h1 class="hero-title">Your Study Dashboard</h1>
+    <p class="hero-sub">Track tasks, hit deadlines, and crush your goals.</p>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-number">{{ total }}</span>
+      <span class="stat-label">Total Tasks</span>
+    </div>
+    <div class="stat-card stat-card--green">
+      <span class="stat-number">{{ completed }}</span>
+      <span class="stat-label">Completed</span>
+    </div>
+    <div class="stat-card stat-card--orange">
+      <span class="stat-number">{{ total - completed }}</span>
+      <span class="stat-label">Remaining</span>
+    </div>
+    <div class="stat-card stat-card--accent">
+      <span class="stat-number">{{ progress }}%</span>
+      <span class="stat-label">Progress</span>
+    </div>
+  </div>
+
+  {% if total > 0 %}
+  <div class="progress-bar-wrap">
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" style="width: {{ progress }}%;">
+        <span class="progress-bar-label">{{ progress }}% done</span>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+
+<!-- SMART STUDY PLAN -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <span class="section-icon"></span> Smart Study Plan
+    </h2>
+
+    <button onclick="togglePlan()" class="btn btn-primary">
+      Show Today's Plan
+    </button>
+  </div>
+
+  <div id="study-plan" style="display:none; margin-top:15px;">
+    <div class="table-wrap">
+      <table class="task-table">
+        <thead>
+          <tr>
+            <th>Subject</th>
+            <th>Topic</th>
+            <th>Days Left</th>
+            <th>Work Per Day</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in study_plan %}
+          <tr>
+            <td>{{ task.subject }}</td>
+            <td>{{ task.topic }}</td>
+            <td>{{ task.days_left }}</td>
+            <td>{{ task.daily_work }} hrs</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+
+<!-- 📊 SUBJECT PROGRESS (NEW FEATURE) -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <span class="section-icon"></span> Subject Progress
+    </h2>
+  </div>
+
+  <div class="stats-row">
+    {% for subject, data in subject_progress.items() %}
+    <div class="stat-card">
+      <span class="stat-number">{{ data.percent }}%</span>
+      <span class="stat-label">{{ subject }}</span>
+
+      <div class="progress-bar-wrap" style="margin-top:10px;">
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width: {{ data.percent }}%;"></div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% if weak_subjects %}
+<div style="margin: 20px 0; padding: 15px; border-radius: 10px; background: #fff3cd; color: #856404;">
+  ⚠️ Focus on:
+  {% for subject in weak_subjects %}
+    <strong>{{ subject.name }}</strong> ({{ subject.percent }}%){% if not loop.last %}, {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+
+<!-- TODAY TASKS -->
+{% if today_tasks %}
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <span class="section-icon">⚡</span> Today's Tasks
+      <span class="badge badge--orange">{{ today_tasks | length }}</span>
+    </h2>
+  </div>
+  <div class="task-grid">
+    {% for task in today_tasks %}
+      {{ render_task_card(task) }}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+
+<!-- OVERDUE -->
+{% if overdue_tasks %}
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <span class="section-icon">🔴</span> Overdue
+      <span class="badge badge--red">{{ overdue_tasks | length }}</span>
+    </h2>
+  </div>
+  <div class="task-grid">
+    {% for task in overdue_tasks %}
+      {{ render_task_card(task) }}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+
+<!-- ALL TASKS -->
+<section class="section">
+  <div class="section-header">
+    <h2 class="section-title">
+      <span class="section-icon">📋</span> All Tasks
+    </h2>
+    <a href="{{ url_for('add_task') }}" class="btn btn-primary">+ Add New Task</a>
+  </div>
+
+  {% if all_tasks %}
+  <div class="table-wrap">
+    <table class="task-table">
+      <thead>
+        <tr>
+          <th>Subject</th>
+          <th>Topic</th>
+          <th>Deadline</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Progress</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for task in all_tasks %}
+        <tr class="task-row
+          {% if task.status == 'Completed' %} row--completed
+          {% elif task.is_overdue() %} row--overdue
+          {% elif task.is_today() %} row--today
+          {% endif %}">
+
+          <td><span class="subject-chip">{{ task.subject }}</span></td>
+          <td>{{ task.topic }}</td>
+
+          <td>{{ task.deadline.strftime('%d %b %Y') }}</td>
+
+          <td>{{ task.priority }}</td>
+          <td>{{ task.status }}</td>
+          <td>{{ task.progress }}%</td>
+
+          <td>
+            <a href="{{ url_for('complete_task', task_id=task.id) }}">✓</a>
+            <a href="{{ url_for('edit_task', task_id=task.id) }}">✏️</a>
+            <a href="{{ url_for('delete_task', task_id=task.id) }}">✕</a>
+          </td>
+
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% else %}
+  <p>No tasks yet</p>
+  {% endif %}
+  {% if weak_subject %}
+{% if weak_subjects %}
+<div style="margin: 20px 0; padding: 15px; border-radius: 10px; background: #fff3cd; color: #856404;">
+  ⚠️ Focus on:
+  {% for subject in weak_subjects %}
+    <strong>{{ subject.name }}</strong> ({{ subject.percent }}%){% if not loop.last %}, {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+{% endif %}
+</section>
+
+{% endblock %}

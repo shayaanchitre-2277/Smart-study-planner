@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="form-section">
+
+  <!-- Header -->
+  <div class="form-header">
+    <a href="{{ url_for('index') }}" class="back-link">← Back to Dashboard</a>
+    <h1 class="form-title">Edit Task</h1>
+    <p class="form-sub">Update your study task details</p>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <form method="POST">
+
+      <!-- Subject -->
+      <div class="form-group">
+        <label class="form-label">Subject</label>
+        <input type="text" name="subject" class="form-input"
+               value="{{ task.subject }}" required>
+      </div>
+
+      <!-- Topic -->
+      <div class="form-group">
+        <label class="form-label">Topic</label>
+        <input type="text" name="topic" class="form-input"
+               value="{{ task.topic }}" required>
+      </div>
+
+      <!-- Deadline -->
+      <div class="form-group">
+        <label class="form-label">Deadline</label>
+        <input type="date" name="deadline" class="form-input"
+               value="{{ task.deadline }}" required>
+      </div>
+
+      <!-- Priority -->
+      <div class="form-group">
+        <label class="form-label">Priority</label>
+
+        <div class="priority-options">
+
+          <label class="priority-option priority-option--easy">
+            <input type="radio" name="priority" value="Easy"
+              {% if task.priority == "Easy" %}checked{% endif %}>
+            <div class="priority-option-inner">
+              <span class="priority-dot"></span>
+              <span class="priority-name">Easy</span>
+              <span class="priority-desc">Light workload</span>
+            </div>
+          </label>
+
+          <label class="priority-option priority-option--medium">
+            <input type="radio" name="priority" value="Medium"
+              {% if task.priority == "Medium" %}checked{% endif %}>
+            <div class="priority-option-inner">
+              <span class="priority-dot"></span>
+              <span class="priority-name">Medium</span>
+              <span class="priority-desc">Moderate effort</span>
+            </div>
+          </label>
+
+          <label class="priority-option priority-option--hard">
+            <input type="radio" name="priority" value="Hard"
+              {% if task.priority == "Hard" %}checked{% endif %}>
+            <div class="priority-option-inner">
+              <span class="priority-dot"></span>
+              <span class="priority-name">Hard</span>
+              <span class="priority-desc">High effort required</span>
+            </div>
+          </label>
+
+        </div>
+      </div>
+      <!-- Progress -->
+    <div class="form-group">
+    <label for="progress" class="form-label">Progress (%)</label>
+    <input
+        type="number"
+        id="progress"
+        name="progress"
+        class="form-input"
+        min="0"
+        max="100"
+        value="{{ task.progress }}"
+    />
+    <span class="form-hint">Update how much of this task is completed</span>
+    </div>
+
+      <!-- Buttons -->
+      <div class="form-actions">
+        <a href="{{ url_for('index') }}" class="btn btn-ghost">Cancel</a>
+        <button type="submit" class="btn btn-primary">Update Task</button>
+      </div>
+
+    </form>
+  </div>
+
+</section>
+
+{% endblock %}
